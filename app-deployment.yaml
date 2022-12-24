@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-db
+  labels:
+    app: app-db
+spec:
+  selector:
+    matchLabels:
+      app: app-db
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: app-db
+    spec:
+      containers:
+        - name: app-db
+          image: vprofile/vprofiledb:V1
+          args:
+            - "ignore-db-dir=lost+found"
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: app-db-data
+          ports:
+            - name: app-db-port
+              containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: db-pass
+      nodeSelector:
+        zone: us-east-2a
+      volumes:
+        - name: app-db-data
+          awsElasticBlockStore:
+            volumeID: vol-02aaf57a27f9ef6c8
+            fsType: ext4
