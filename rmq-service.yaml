@@ -1,0 +1,11 @@
+kind: Service
+metadata:
+  name: vpromq01
+spec:
+  ports:
+    - port: 15672
+      targetPort: app-rmq-port
+      protocol: TCP
+  selector:
+    app: app-rmq
+  type: ClusterIP
